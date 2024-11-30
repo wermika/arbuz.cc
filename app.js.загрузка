@@ -1,0 +1,571 @@
+var ws;
+function start_ws() {
+    ws = new WebSocket('wss://play-jet.pro:3000');
+    var mess;
+    var startValue;
+    var finishValue;
+    var speed;
+    var raund = 0;
+    var sraund = 0;
+    var loadingstart = 0;
+    var raund_value = 1;
+    var us_mailjs = $("#us_mail").val();
+    var userrate1 = 0;
+    var userrate2=0;
+    let cefarr = [];
+    var ratecount=0;
+
+
+    function closewin12(jet) {
+        setTimeout(function () {
+            $('.jet-coin-take').removeClass(jet);
+        }, 7000);
+    };
+    function w12open(jet,cef,rub) {
+        var jetv="jet-coin-take-active";
+        if(jet == 2) jetv="jet-coin-take-active2";
+        $('.jet-coin-take').addClass(jetv);
+        var jetw="#win"+jet+"_us_cef";
+        var jetr="#win"+jet+"_rate_rub";
+        $(jetw).html('x' + cef);
+        $(jetr).html(rub);
+        closewin12(jetv);
+    };
+    function jaddrate(js) {
+        console.log(js);
+        var addrate = js.addrate;
+        if (addrate == 1) {
+            var allr = document.getElementById("allrates").innerHTML + js.div;
+            document.getElementById("allrates").innerHTML=allr;
+            ratecount++;
+            $("#allrate").html(ratecount);
+        }
+        if (addrate == 2) {
+            var editid = js.editid;
+            var element=document.getElementById(editid);
+            if(element) {
+                document.getElementById(editid).className = "jet-rates-item rates-item-active";
+                document.getElementById(editid).innerHTML = js.div;
+            }
+        }
+        if (addrate == 3) {
+            if(ratecount>0) ratecount--;
+            var editid = js.editid;
+            document.getElementById(editid).remove();
+            $("#allrate").html(ratecount);
+        }
+        if (addrate == 4) {
+            ratecount=0;
+            document.getElementById("allrates").innerHTML="";
+            $("#allrate").html(ratecount);
+        }
+    };
+
+
+    $("#bl1_button2").click(function () {
+
+        mess = {
+            ratefloat: "left",
+            us_mail: $("#us_mail").val(),
+            us_cef: startValue,
+            win: 1
+        };
+        ws.send(JSON.stringify(mess));
+    });
+
+    $("#bl2_button2").click(function () {
+
+        mess = {
+            ratefloat: "right",
+            us_mail: $("#us_mail").val(),
+            us_cef: startValue,
+            win: 1
+        };
+        ws.send(JSON.stringify(mess));
+    });
+
+
+    $("#closerate1").click(function () {
+        mess = {
+            ratefloat: "left",
+            us_mail: $("#us_mail").val(),
+            closerate: 1
+        };
+        ws.send(JSON.stringify(mess));
+    });
+
+
+    $("#closerate2").click(function () {
+        mess = {
+            ratefloat: "right",
+            us_mail: $("#us_mail").val(),
+            closerate: 1
+        };
+        ws.send(JSON.stringify(mess));
+    });
+
+
+    $('#rate').click(function () {
+        var rate_ammount = $("#rate_amount_amount").val();
+        var auto_out = $("#rate__coin").val();
+        var check_rate;
+
+        if ($('#check_rate2_coin').is(':checked')) {
+            check_rate = 1;
+        } else {
+            check_rate = 0;
+        }
+
+        mess = {
+            rate_ammount: rate_ammount,
+            us_mail: $("#us_mail").val(),
+            manualrate: true,
+            auto_out: auto_out,
+            check_rate: check_rate,
+            ratefloat: "left"
+        };
+
+        ws.send(JSON.stringify(mess));
+    });
+
+
+    $('#rate2').click(function () {
+        var rate_ammount = $("#rate2_amount_amount").val();
+        var auto_out = $("#rate2__coin").val();
+        var check_rate;
+
+        if ($('#check2_rate2_coin').is(':checked')) {
+            check_rate = 1;
+        } else {
+            check_rate = 0;
+        }
+
+        mess = {
+            rate_ammount: rate_ammount,
+            us_mail: $("#us_mail").val(),
+            manualrate: true,
+            auto_out: auto_out,
+            check_rate: check_rate,
+            ratefloat: "right"
+        };
+        ws.send(JSON.stringify(mess));
+    });
+
+
+    $('#check_rate1_coin').click(function () {
+
+        if ($('#check_rate1_coin').is(':checked')) {
+            var aurate_ammount = $("#rate_amount_amount").val();
+            mess = {
+                aurate_ammount: aurate_ammount,
+                us_mail: $("#us_mail").val(),
+                autorate: 1,
+                editautorate: 1
+            }
+            ws.send(JSON.stringify(mess));
+        } else {
+            mess = {
+                aurate_ammount: 0,
+                us_mail: $("#us_mail").val(),
+                autorate: 0,
+                editautorate: 1
+            }
+            ws.send(JSON.stringify(mess));
+        }
+
+    });
+
+
+    $('#check2_rate1_coin').click(function () {
+
+        if ($('#check2_rate1_coin').is(':checked')) {
+            var aurate_ammount = $("#rate2_amount_amount").val();
+            mess = {
+                aurate_ammount2: aurate_ammount,
+                us_mail: $("#us_mail").val(),
+                autorate2: 1,
+                editautorate2: 1
+            }
+            ws.send(JSON.stringify(mess));
+        } else {
+            mess = {
+                aurate_ammount2: 0,
+                us_mail: $("#us_mail").val(),
+                autorate2: 0,
+                editautorate2: 1
+            }
+            ws.send(JSON.stringify(mess));
+        }
+
+    });
+
+
+    $('#check_rate2_coin').click(function () {
+        var rate__coin = $("#rate__coin").val();
+
+        if ($('#check_rate2_coin').is(':checked')) {
+            mess = {
+                rate__coin: rate__coin,
+                us_mail: $("#us_mail").val(),
+                autoout_us1: 1,
+                editautooutus1: 1
+            }
+            ws.send(JSON.stringify(mess));
+        } else {
+            mess = {
+                rate__coin: rate__coin,
+                us_mail: $("#us_mail").val(),
+                autoout_us1: 0,
+                editautooutus1: 1
+            }
+            ws.send(JSON.stringify(mess));
+        }
+
+
+    });
+
+
+    $('#check2_rate2_coin').click(function () {
+        var rate__coin = $("#rate2__coin").val();
+
+        if ($('#check2_rate2_coin').is(':checked')) {
+            mess = {
+                rate__coin2: rate__coin,
+                us_mail: $("#us_mail").val(),
+                autoout_us2: 1,
+                editautooutus2: 1
+            }
+            ws.send(JSON.stringify(mess));
+        } else {
+            mess = {
+                rate__coin2: rate__coin,
+                us_mail: $("#us_mail").val(),
+                autoout_us2: 0,
+                editautooutus2: 1
+            }
+            ws.send(JSON.stringify(mess));
+        }
+
+    });
+
+
+    ws.onopen = function (e) {
+
+        mess = {
+            aurate_ammount: 0,
+            us_mail: $("#us_mail").val(),
+            autorate: 0,
+            editautorate: 1
+        }
+        ws.send(JSON.stringify(mess));
+
+        mess = {
+            rate__coin: 0,
+            us_mail: $("#us_mail").val(),
+            autoout_us1: 0,
+            editautooutus1: 1
+        }
+
+        ws.send(JSON.stringify(mess));
+
+        mess = {
+            aurate_ammount2: 0,
+            us_mail: $("#us_mail").val(),
+            autorate2: 0,
+            editautorate2: 1
+        }
+        ws.send(JSON.stringify(mess));
+
+
+        mess = {
+            rate__coin2: 0,
+            us_mail: $("#us_mail").val(),
+            autoout_us2: 0,
+            editautooutus2: 1
+        }
+        ws.send(JSON.stringify(mess));
+    };
+
+    ws.onmessage = function (e) {
+        var js = JSON.parse(e.data);
+//    console.log(js);
+        if(js.online>0) $("#online").html(js.online);
+        $("#rub").html(js.us_rub);
+
+        var chat = js.chat;
+        if (chat == 1) {
+            $("#chat_content").html(js.chattext);
+        }
+        var end_raund = js.end_raund;
+        if (end_raund == 1) prevrates();
+
+        var addcoeff = js.addcoeff;
+        if (addcoeff == 1) addcef(js.coefficient);
+
+        if (js.addrate > 0) jaddrate(js);
+        if (js.win1 == 1) w12open(1,js.win1_us_cef,js.win1_rate_rub + " ₽");
+        if (js.win2 == 1) w12open(2,js.win2_us_cef,js.win2_rate_rub + " ₽");
+        if (js.autowin1 == 1) w12open(1,js.autowincef1,js.autowinrub1 + " ₽");
+        if (js.autowin2 == 1) w12open(2,js.autowincef2,js.autowinrub2 + " ₽");
+
+
+
+
+
+        var button11 = js.button11;
+        var button12 = js.button12;
+        var button13 = js.button13;
+
+
+        if (button11 == 1) {
+            $("#bl1_button1").css("display", "block");
+            $("#bl1_button2").css("display", "none");
+            $("#bl1_button3").css("display", "none");
+            userrate1=0;
+        }
+
+        if (button12 == 1) {
+            $("#bl1_button1").css("display", "none");
+            $("#bl1_button2").css("display", "block");
+            $("#bl1_button3").css("display", "none");
+
+            if (js.cef1 == 1) {
+                var user_rate11 = js.user_rate1;
+                var user_rate_res1 = user_rate11 * startValue;
+                $('#raterusult1').html(user_rate_res1.toFixed(2));
+            }
+
+        }
+        if (button13 == 1) {
+            $("#bl1_button1").css("display", "none");
+            $("#bl1_button2").css("display", "none");
+            $("#bl1_button3").css("display", "block");
+            userrate1=js.user_rate1;
+//            console.log("raund_value "+raund_value+" user_rate1 "+userrate1);
+
+        }
+
+
+        var button21 = js.button21;
+        var button22 = js.button22;
+        var button23 = js.button23;
+
+
+        if (button21 == 1) {
+            $("#bl2_button1").css("display", "block");
+            $("#bl2_button2").css("display", "none");
+            $("#bl2_button3").css("display", "none");
+            userrate2=0;
+        }
+
+        if (button22 == 1) {
+            $("#bl2_button1").css("display", "none");
+            $("#bl2_button2").css("display", "block");
+            $("#bl2_button3").css("display", "none");
+
+            if (js.cef2 == 1) {
+                var user_rate21 = js.user_rate2;
+                var user_rate_res2 = user_rate21 * startValue;
+                $('#raterusult2').html(user_rate_res2.toFixed(2));
+            }
+
+        }
+
+        if (button23 == 1) {
+            $("#bl2_button1").css("display", "none");
+            $("#bl2_button2").css("display", "none");
+            $("#bl2_button3").css("display", "block");
+            userrate2=js.user_rate2;
+        }
+
+
+        raund = js.raund;
+        if (raund == 1) {
+            if(js.raund_value>1)
+            if(js.raund_value<raund_value) console.log("js.raund_value<raund_value "+js.raund_value+" "+raund_value);
+            raund_value = js.raund_value;
+            finishValue = js.raund_end;
+            loadingstart = 0;
+            speed = 100;
+            startValue = raund_value;
+            if(raund_value>=1){
+                if (userrate1 > 0) {
+                    var user_rate_res1 = userrate1 * startValue;
+                    $("#bl1_button1").css("display", "none");
+                    $("#bl1_button2").css("display", "block");
+                    $("#bl1_button3").css("display", "none");
+                    $('#raterusult1').html(user_rate_res1.toFixed(2));
+                }
+                if (userrate2 > 0) {
+                    var user_rate_res2 = userrate2 * startValue;
+                    $("#bl2_button1").css("display", "none");
+                    $("#bl2_button2").css("display", "block");
+                    $("#bl2_button3").css("display", "none");
+                    $('#raterusult2').html(user_rate_res2.toFixed(2));
+                }
+
+            }
+
+
+            startAnimate();
+//            refreshAnimate();
+            if (sraund == 0) {
+                sraund = 1;
+                luckyJet.start();
+                if (startValue == 1) {
+                    console.log("Start raund "+raund_value);
+
+                    var start_audio = $("#start_audio")[0];
+                    if ($(".jet-nav-setting-btn").hasClass("jet-nav-active")) {
+                        start_audio.pause();
+                    } else {
+                        start_audio.play();
+                    }
+                    $(".jet-main-schedule").addClass("schedule-active");
+                    $(".jet-main-schedule").addClass("schedule-start");
+                    $(".schedule-number-finish").removeClass("schedule-finish-active");
+                } else {
+
+//                    luckyJet.start();
+
+                    var start_audio = $("#start_audio")[0];
+                    if ($(".jet-nav-setting-btn").hasClass("jet-nav-active")) {
+                        start_audio.pause();
+                    } else {
+                        if (start_audio !== undefined) {
+                            start_audio.play();
+                        }
+                    }
+
+                    $(".jet-main-schedule").addClass("schedule-active");
+                    $(".jet-main-schedule").addClass("schedule-start");
+                    $(".schedule-number-finish").removeClass("schedule-finish-active");
+                }
+            }
+            function startAnimate() {
+                $('#timer').text(startValue.toFixed(2)).stop();
+                if(finishValue>=1) {
+//                    console.log("finishValue "+finishValue);
+                    if (startValue >= finishValue) {
+//                        console.log("startValue >= finishValue "+startValue+" "+finishValue);
+                        addcef(finishValue);
+                        luckyJet.end();
+                        var end_audio = $("#finish_audio")[0];
+                        if ($(".jet-nav-setting-btn").hasClass("jet-nav-active")) {
+                            end_audio.pause();
+                        } else {
+                            end_audio.play();
+                        }
+                        $(".jet-main-schedule").removeClass("schedule-start");
+                        $(".schedule-number-finish").addClass("schedule-finish-active");
+                        $('.schedule-number-header').addClass("number-animated-active");
+                        startValue = finishValue;
+                        raund = 0;
+                    }
+                }
+            }
+        }
+
+        function refreshAnimate() {
+            setTimeout(function () {
+                startValue = 1;
+                speed = 50;
+                $('.schedule-number-header').removeClass("number-animated-active");
+                $('#timer').text(startValue.toFixed(2)).stop();
+            }, 100);
+        }
+
+        var loading = js.load;
+
+        if (loading == 1) {
+            if (loadingstart == 0) {
+                sraund=0;
+                loadingstart = 1;
+                console.log(js);
+                $(".jet-main-laoding").addClass("laoding-active");
+                var progressBar = $('.progress-line');
+                var loading_start = js.loading_start;
+                var loading_end = js.loading_end;
+                var time_start = loading_start;
+                time_start = parseInt(time_start);
+                var time_end = loading_end;
+                time_end = parseInt(time_end);
+
+                var status = time_end - time_start;
+                status = parseInt(status);
+
+                if (status > 0) {
+                    var pos = status;
+                    pos = parseInt(pos);
+                    pos = pos.toFixed(1);
+                    pos = pos * 1000;
+                    pos = parseInt(pos);
+
+                    progressBar.animate({width: '0%'}, pos, function () {
+                        $('.progress-line').css('width', '100%');
+                        $(".jet-main-laoding").removeClass("laoding-active");
+                        $(".jet-main-schedule").removeClass("schedule-active");
+                        raund_sha();
+                        refreshAnimate();
+                        sraund = 0;
+                        raund = 0;
+                    });
+                } else {
+                    $('.progress-line').css('width', '100%');
+                    $(".jet-main-laoding").removeClass("laoding-active");
+                }
+            }
+        }
+
+        var us_raund1 = js.us_raund1;
+
+        if (us_raund1 == 1) {
+            var maxButtons = 6;
+            var buttonsCount = $('.error__blog button').length;
+            $('.error__blog').append('<button class="error__blog-item">Недосточно средтв <span> ' + (buttonsCount + 1) + '</span></button>');
+            if (buttonsCount == maxButtons) {
+                $('.error__blog button:last-child').hide();
+            }
+            setTimeout(function () {
+                $('.error__blog button:last-child').remove();
+            }, 5000);
+        }
+        function addcef(cef)
+        {
+            while(cefarr.length>39) cefarr.pop();
+            cefarr.unshift(cef);
+            document.getElementById("coefficient").innerHTML="";
+            let i;
+            for (i=0;i<cefarr.length;i++) {
+                var bg = "shoulder-bg2";
+                if(cefarr[i] < 5) bg = "shoulder-bg1";
+                if(cefarr[i] > 9) bg = "shoulder-bg3";
+                document.getElementById("coefficient").innerHTML += "<div class=\"jet-main-shoulder-item\"><div class=\"rates-item-shoulder-blog "+bg+"\">"+cefarr[i]+"x</div></div>";
+            }
+
+        }
+        function prevrates() {
+            $.ajax({
+                type: "POST",
+                url: "/engine/ajax/prevrates.php",
+                response: 'text',
+                success: function(data){
+                    $("#prevrates").html(data);
+                }
+            });
+        }
+    };
+
+};
+function send_chat_refresh(){
+    var mess = {
+        chatmess: 2,
+        text: "refresh"
+    };
+    if (ws.readyState) {
+        ws.send(JSON.stringify(mess));
+    }
+
+};
+
+
