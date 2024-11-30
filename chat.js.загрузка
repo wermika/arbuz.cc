@@ -1,0 +1,98 @@
+$("#chat_submit").click(function() {
+    var text = $("#chat_input").val();
+
+    var progressBar = $('.message_laoding_line');
+    $(".jet_message_laoding").addClass("d-block");
+    $(".jet-message-form").addClass("d-none");
+    progressBar.animate({width: '0%'}, 5000, function () {
+        $('.message_laoding_line').css("width", "100%");
+        $(".jet_message_laoding").removeClass("d-block");
+        $(".jet-message-form").removeClass("d-none");
+
+        if (text != "") {
+            $.ajax({
+                type: "POST",
+                url: "../engine/ajax/chat.php",
+                data: {
+                    text: text
+                },
+                success: function (result) {
+                    send_chat_refresh();
+                    var succes = result['succes'];
+                    if (succes == "ok") {
+                        $('#chat_input').val("");
+                    }
+                }
+            });
+            $('#chat_input').val("");
+        }
+    });
+});
+
+
+$(document).ready(function () {
+var jet_message_gif = $(".jet-message-gif")
+var gif__blog =  $(".gif__blog")
+var gif_header_icon = $('.gif_header_icon')
+jet_message_gif.click(function() {
+gif__blog.toggleClass("gif__blog_active")
+});
+$(document).on('click', function(e) {
+if (!$(e.target).closest(".jet-message-item").length) {
+gif__blog.removeClass("gif__blog_active")
+}
+});
+gif_header_icon.click(function(e) {
+gif__blog.removeClass("gif__blog_active")
+});
+
+
+// Загрузка гифок через API
+$.ajax({
+url: 'https://api.giphy.com/v1/gifs/trending',
+data: {
+// ключ 
+api_key: 'sp3aXAjinzoy0ly3NaGhpeOdJMe5lFFu',
+limit: 50
+},
+success: function(response) {
+var gifs = response.data;
+var select = $('.gif__section_flex');
+$.each(gifs, function(index, gif) {
+select.append('<div class="gif__section_item"> <img src="'+ gif.images.original.url +'"/></div>');
+});
+      
+// Обработчик клика на гифку
+$('.gif__section_item').click(function() {
+var gifUrl = $(this).find('img').attr('src');
+
+var progressBar = $('.message_laoding_line');
+$(".jet_message_laoding").addClass("d-block");
+$(".jet-message-form").addClass("d-none");
+progressBar.animate({ width: '0%' }, 5000, function() {
+$('.message_laoding_line').css("width", "100%");
+$(".jet_message_laoding").removeClass("d-block");
+$(".jet-message-form").removeClass("d-none");
+
+
+$.ajax({
+type: "POST",
+url: "../engine/ajax/gif.php",
+data: {
+url: gifUrl
+},
+success: function(result){
+    send_chat_refresh();
+}
+});	
+});
+
+gif__blog.removeClass("gif__blog_active")
+});}
+});
+
+});
+
+
+
+

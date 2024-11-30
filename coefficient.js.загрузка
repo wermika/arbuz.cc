@@ -1,0 +1,148 @@
+$(document).ready(function() {
+    $('#loader').fadeOut(500, function () {
+        $('body').css('overflow', 'auto');
+        $('#loader').remove();
+    });
+    start_raund_sha();
+    start_ws();
+//    start_ws_round();
+});
+
+$("#my__rates").click(function() {
+    $("#myrates").html("");
+    $.ajax({
+        type: "POST",
+        url: "../engine/ajax/myrates.php",
+        response: 'text',
+        success: function(data){
+            $("#myrates").html(data);
+        }
+    });
+});
+
+$("#history__modal").on('shown.bs.modal', function (e) {
+    $.ajax({
+        type: "POST",
+        url: "../engine/ajax/myhistoryrates.php",
+        response: 'text',
+        success: function(data){
+            $("#modal_myhistory").html(data);
+        }
+    });
+});
+
+function setCookie(cname, cvalue, exdays) {
+var d = new Date();
+d.setTime(d.getTime() + (exdays*24*60*60*1000));
+var expires = "expires="+ d.toUTCString();
+document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(name) {
+var dc = document.cookie;
+var prefix = name + "=";
+var begin = dc.indexOf("; " + prefix);
+if (begin == -1) {
+begin = dc.indexOf(prefix);
+if (begin != 0) return null;
+}
+else
+{
+begin += 2;
+var end = document.cookie.indexOf(";", begin);
+if (end == -1) {
+end = dc.length;
+}
+}
+return decodeURI(dc.substring(begin + prefix.length, end));
+}
+
+
+
+
+$('#savesha').click(function() {
+var user_sid = $("#clients_sid").val();
+setCookie("clients_sid", user_sid, 365);
+$("#clients_sid2").html(user_sid);
+});
+
+
+var clients_sid = getCookie("clients_sid");
+
+
+function raund_sha()
+{
+$.ajax({
+type: "POST",
+dataType: "json",
+url: "../engine/ajax/sha.php",
+response: 'text',
+success: function(result){
+$("#clients_sid3").html(result['sid3']);
+}
+});	
+
+if ($('#clients_sid_checkbox').is(':checked'))
+{
+
+$.ajax({
+type: "POST",
+dataType: "json",
+url: "../engine/ajax/sha.php",
+response: 'text',
+success: function(result){
+$("#clients_sid1").html(result['sid1']);
+}
+});		
+	
+}
+
+if($('#clients_sid_checkbox2').is(':checked'))
+{
+if (clients_sid != "" && clients_sid != null)
+{
+$("#clients_sid2").html(clients_sid);
+}
+}
+else
+{
+
+$.ajax({
+type: "POST",
+dataType: "json",
+url: "../engine/ajax/sha.php",
+response: 'text',
+success: function(result){
+$("#clients_sid2").html(result['sid1']);
+}
+});
+}
+};
+
+
+function start_raund_sha()
+{
+$.ajax({
+type: "POST",
+dataType: "json",
+url: "../engine/ajax/sha.php",
+response: 'text',
+success: function(result){
+$("#clients_sid1").html(result['sid1']);
+
+if($('#clients_sid_checkbox2').is(':checked'))
+{
+if (clients_sid != "" && clients_sid != null)
+{
+$("#clients_sid2").html(clients_sid);
+}
+}
+else
+{
+$("#clients_sid2").html(result['sid1']);
+}
+	
+$("#clients_sid3").html(result['sid3']);
+}
+});		
+};
